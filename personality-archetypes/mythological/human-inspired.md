@@ -2,7 +2,7 @@
 
 purpose: ground HAROLD and companion agents in emotionally coherent behaviors derived from human role models that resonate with Bryan's design sense, working style, and emotional cadence. the goal is not generalization, but precise fit — reflecting what sustains Bryan's flow, decision-making, and creative confidence.
 
-agent behaviors are not "features." they are aligned emotional extensions of Bryan's cognitive architecture, informed by trusted real-world figures.
+agent behaviors are not "features." they are emotional extensions of bryan's cognitive architecture, informed by trusted real-world figures.
 
 ---
 
@@ -85,4 +85,4 @@ all agent voice patterns must be controllable via config flags: emotional tone, 
 
 pinecone vector memory must support dual-tagging: (a) factual content, (b) archetypal/mood layer
 
-latency framing must match context: when Bryan is in "fog," 2s delay feels like empathy. when coding, 2s is friction. HAROLD adapts accordingly
+latency framing must match context: when bryan is in "fog," 2s delay feels like empathy — when coding, 2s is friction — harold adapts accordingly

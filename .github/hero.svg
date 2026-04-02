@@ -1,0 +1,69 @@
+<svg viewBox="0 0 800 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      @keyframes signal-wave {
+        0% { d: path('M 200 100 Q 220 80 240 100 T 280 100'); opacity: 0.3; }
+        50% { d: path('M 200 100 Q 220 70 240 100 T 280 100'); opacity: 0.8; }
+        100% { d: path('M 200 100 Q 220 80 240 100 T 280 100'); opacity: 0.3; }
+      }
+      @keyframes antenna-pulse {
+        0% { stroke: #58a6ff; filter: drop-shadow(0 0 2px #58a6ff); }
+        50% { stroke: #58a6ff; filter: drop-shadow(0 0 8px #58a6ff); }
+        100% { stroke: #58a6ff; filter: drop-shadow(0 0 2px #58a6ff); }
+      }
+      @keyframes grid-fade {
+        0% { opacity: 0.05; }
+        50% { opacity: 0.12; }
+        100% { opacity: 0.05; }
+      }
+      .grid { animation: grid-fade 4s ease-in-out infinite; }
+      .antenna { animation: antenna-pulse 2s ease-in-out infinite; }
+      .signal { animation: signal-wave 3s ease-in-out infinite; }
+    </style>
+    <pattern id="grid" patternUnits="userSpaceOnUse" width="40" height="40">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#58a6ff" stroke-width="0.5"/>
+    </pattern>
+  </defs>
+
+  <!-- Dark background -->
+  <rect width="800" height="200" fill="#0d1117"/>
+
+  <!-- Grid pattern -->
+  <rect width="800" height="200" fill="url(#grid)" class="grid"/>
+
+  <!-- Left antenna element -->
+  <g class="antenna">
+    <line x1="150" y1="160" x2="160" y2="60" stroke="#58a6ff" stroke-width="2" stroke-linecap="round"/>
+    <line x1="160" y1="60" x2="150" y2="40" stroke="#58a6ff" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="160" y1="60" x2="170" y2="40" stroke="#58a6ff" stroke-width="1.5" stroke-linecap="round"/>
+    <circle cx="160" cy="60" r="3" fill="#58a6ff"/>
+  </g>
+
+  <!-- Signal waves emanating right -->
+  <g class="signal">
+    <path d="M 200 100 Q 220 75 240 100 T 280 100" fill="none" stroke="#58a6ff" stroke-width="1.5" opacity="0.6"/>
+    <path d="M 200 100 Q 220 85 240 100 T 280 100" fill="none" stroke="#58a6ff" stroke-width="1" opacity="0.4"/>
+  </g>
+
+  <!-- Center circuit element -->
+  <g opacity="0.8">
+    <rect x="350" y="70" width="100" height="60" fill="none" stroke="#58a6ff" stroke-width="1.5"/>
+    <circle cx="360" cy="80" r="2" fill="#58a6ff"/>
+    <circle cx="430" cy="115" r="2" fill="#58a6ff"/>
+    <line x1="360" y1="80" x2="430" y2="115" stroke="#58a6ff" stroke-width="1" opacity="0.6"/>
+    <path d="M 365 125 L 375 125 M 380 125 L 390 125" stroke="#58a6ff" stroke-width="1" opacity="0.5"/>
+  </g>
+
+  <!-- Right antenna mirror -->
+  <g class="antenna">
+    <line x1="650" y1="160" x2="640" y2="60" stroke="#58a6ff" stroke-width="2" stroke-linecap="round"/>
+    <line x1="640" y1="60" x2="650" y2="40" stroke="#58a6ff" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="640" y1="60" x2="630" y2="40" stroke="#58a6ff" stroke-width="1.5" stroke-linecap="round"/>
+    <circle cx="640" cy="60" r="3" fill="#58a6ff"/>
+  </g>
+
+  <!-- Text: repo name -->
+  <text x="400" y="155" font-family="monospace" font-size="20" font-weight="bold" text-anchor="middle" fill="#58a6ff" opacity="0.9">
+    heraldstack-core
+  </text>
+</svg>

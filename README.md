@@ -1,77 +1,37 @@
-```
-  +-[ heraldstack ]----------------------------------------+
-  |  ambient ai infrastructure for bryan chasko            |
-  |  shannon . haunting . gander . ibeji                   |
-  +---------------------------------------------------------+
-```
+<p align="center">
+  <img src=".github/hero.svg" alt="heraldstack-core" width="800">
+</p>
 
-multi-platform agent collective across claude code, kiro, goose, and gemini cli.
-four agent platforms, one shared knowledge backbone (qdrant + valkey), full
-opentelemetry tracing, rust-first application logic, aws serverless deployment.
+# heraldstack-core
 
----
+Ambient AI infrastructure for multi-platform agent collectives. Four CLI platforms (Claude Code, kiro, goose, Gemini) routed through herald agents, backed by unified knowledge backbone (qdrant vector store, valkey cache), full OpenTelemetry tracing, rust-first application logic.
 
-## critical: no new shell scripts for application logic
+## status
 
-bias is rust for all new functionality. do not create shell scripts for application logic. instead:
+public
 
-- add features to existing rust binaries
-- update documentation
-- add --help flags to existing tools for self-documenting usage
+## what this is
 
-shell scripts that stay as shell:
-- deployment scripts orchestrating external tools (aws cli, docker)
-- check-rust.sh (must work even when rust code has issues)
-- ci/cd pipeline scripts for infrastructure tasks
-
----
-
-## automated tools -- run these before manual fixes
-
-```bash
-./target/release/check_json --fix        # json formatting
-./scripts/validation/check-rust.sh       # rust formatting, clippy, tests
-./target/release/format_md               # markdown formatting
-./target/release/validate_naming --fix   # naming convention checks
-```
-
----
-
-## development standards
-
-- [development principles](docs/DEVELOPMENT-PRINCIPLES.md)
-- [naming conventions](docs/naming-conventions.md)
-- build + deploy: `./scripts/deploy/deploy.sh`
-- json tools: rust-based utilities in `src/utils/json-tools`
-- all ingestion follows [modular ingest refactor plan](docs/migration/INGEST-MIGRATION-MODULAR-PLAN.md)
-
----
+- Unified knowledge backbone: qdrant collections (copywriting, writing-inbox, shared-knowledge, prompt-transcripts, agent-memory, shannon-methodology, verbal-ticks)
+- Core utilities: JSON schema validation, markdown formatting, naming convention enforcement, JSONL ingestion tooling
+- AI entity definitions: nine herald agent personas with Marvel-inspired AI references
+- Deployment scripts and validation tools (all new features in Rust, not shell scripts)
+- Ethics guidelines, development principles, naming conventions, architecture decision records
 
 ## architecture
 
-all interactions flow through harold, who routes context to specialized agents.
-four cli platforms share knowledge via qdrant collections (copywriting:8100,
-writing-inbox:8101, shared-knowledge:8102) and four expansion collections
-(prompt-transcripts, agent-memory, shannon-methodology, verbal-ticks) on port 8103.
+Four agent platforms (shannon/haunting/gander/ibeji) share knowledge via streaming HTTP to persistent MCP endpoints. Herald routes context to specialists. Qdrant stores chunked embeddings (character-based chunks, HNSW indexing). Valkey caches frequent queries. Jaeger collects OpenTelemetry traces. All application logic written in Rust. Shell scripts limited to deployment orchestration (aws-cli, docker, ci/cd)
 
-```
-shannon (claude code)  -- code, architecture, ci/cd
-haunting (kiro)        -- research, knowledge base, document analysis
-gander (goose)         -- automation, pipeline execution
-ibeji (gemini)         -- context bridging, multi-modal
-```
+## related repos
 
----
-
-## documentation
-
-- [jsonl format for vector embedding](docs/vector-search/jsonl-ingestion.md)
-- [migration documentation](docs/migration/)
-- [modular ingest refactor plan](docs/migration/INGEST-MIGRATION-MODULAR-PLAN.md)
-- [ethics guidelines](config/ethics/LawsOfRobotics.json)
+- `haunting-kiro-cli` — Kiro-cli agent definitions (routes through poltergeist-harald)
+- `shannonclaudecodecli` — Claude Code agent definitions (routes through entropy-harald)
+- `gandergoosecli` — Goose runtime with Harald identity injection
+- `ibeji-gemini-cli` — Gemini CLI research, agent definitions
+- `heraldstack-infra` — backing services, persistent MCP endpoints
+- `heraldstack-mcp` — launcher scripts, dockerfiles, platform configs
+- `heraldstack-cache-proxy` — Rust cache proxy for qdrant
 
 ---
 
-style guide: https://github.com/BryanChasko/heraldstack-mcp/blob/main/STYLE_GUIDE.md
-
-mit license 2025 bryan chasko
+built by [bryan chasko](https://github.com/BryanChasko) with the [heraldstack](https://github.com/BryanChasko/heraldstack-core) agent collective

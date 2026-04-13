@@ -1,0 +1,35 @@
+---
+# Tier 2 — Security Scanning (semgrep + trivy)
+# Asynchronous: fire and forget, does not block tier-3
+# Execution time: 10-30 min
+# Pool: firecracker (fc-pool)
+# Failure mode: warn only (non-blocking)
+
+pool: firecracker
+
+steps:
+  - name: semgrep-scan
+    image: returntocorp/semgrep:latest
+    commands:
+      - semgrep scan --json --config=p/security-audit \
+        --output=/workspace/semgrep-report.json /workspace || true
+    environment:
+      SEMGREP_APP_TOKEN: ""
+    failure: ignore
+
+  - name: trivy-scan
+    image: aquasec/trivy:latest
+    commands:
+      - trivy fs --format=json --severity=HIGH,CRITICAL \
+        --output=/workspace/trivy-report.json /workspace || true
+    failure: ignore
+    depends_on: [semgrep-scan]
+
+  - name: upload-reports
+    image: alpine:latest
+    commands:
+      - |
+        echo "Security scan reports generated:"
+        ls -lh /workspace/*.json 2>/dev/null || echo "No reports available"
+    failure: ignore
+    depends_on: [trivy-scan]

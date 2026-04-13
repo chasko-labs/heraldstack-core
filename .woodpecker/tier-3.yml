@@ -1,0 +1,58 @@
+---
+# Tier 3 — Comprehensive Testing
+# Nightly trigger: scheduled via cron in main.yml
+# Execution time: 30+ min
+# Pool: firecracker (fc-pool)
+# Failure mode: fail (testing must pass for nightly)
+
+pool: firecracker
+
+steps:
+  - name: unit-tests
+    image: rust:latest
+    commands:
+      - cargo test --workspace --release --lib
+    environment:
+      CARGO_HOME: /workspace/.cargo
+    failure: fail
+    when:
+      - event: cron
+        cron: nightly-test
+
+  - name: integration-tests
+    image: rust:latest
+    commands:
+      - cargo test --workspace --release --test '*'
+    environment:
+      CARGO_HOME: /workspace/.cargo
+    failure: fail
+    depends_on: [unit-tests]
+    when:
+      - event: cron
+        cron: nightly-test
+
+  - name: doc-tests
+    image: rust:latest
+    commands:
+      - cargo test --doc --release
+    environment:
+      CARGO_HOME: /workspace/.cargo
+    failure: fail
+    depends_on: [integration-tests]
+    when:
+      - event: cron
+        cron: nightly-test
+
+  - name: coverage-report
+    image: rust:latest
+    commands:
+      - cargo install tarpaulin
+      - cargo tarpaulin --workspace --release --out=Json \
+        > /workspace/coverage-report.json || true
+    environment:
+      CARGO_HOME: /workspace/.cargo
+    failure: ignore
+    depends_on: [doc-tests]
+    when:
+      - event: cron
+        cron: nightly-test

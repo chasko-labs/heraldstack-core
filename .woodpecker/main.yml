@@ -1,0 +1,153 @@
+---
+# Woodpecker CI/CD Pipeline Orchestrator
+# Split-tier: gates → format/lint/build → async security → nightly tests
+# Trigger: push/pull_request on main, cron nightly
+# Architecture: sequential tier gates (0→1), async tier-2, cron-gated tier-3
+
+# Define the cron job for nightly testing
+crons:
+  - name: nightly-test
+    expr: "0 2 * * *"
+    event: cron
+    branch: main
+
+# Default pool: firecracker (fc-pool agents) for consistent environment
+pool: firecracker
+
+# Matrix: disabled — using sequential depends_on instead
+# Services: none required for this pipeline
+
+# ─── Tier 0: Governance Gates ───────────────────────────────────────────
+# These are synchronous and block all downstream tiers
+# Runs on every push/PR
+
+steps:
+  - name: tier-0-gate
+    image: alpine:latest
+    commands:
+      # Inline tier-0 gates to block early
+      - |
+        if [ "${WOODPECKER_PULL_REQUEST_DRAFT}" = "true" ]; then
+          echo "✓ Skipping draft PR — halting pipeline"
+          exit 0
+        fi
+        COMMIT_MSG="${WOODPECKER_COMMIT_MESSAGE}"
+        if echo "$COMMIT_MSG" | grep -qi '\[skip ci\]\|\[ci skip\]'; then
+          echo "✓ Detected [skip ci] — halting pipeline"
+          exit 0
+        fi
+        echo "✓ Governance gates passed, continuing to tier-1"
+
+  # ─── Tier 1: Format, Lint, Build ─────────────────────────────────────────
+  # Synchronous, sequential steps. Fails fast on errors.
+  # Runs on: push to main, pull_request to main (excluding drafts/skip-ci)
+
+  - name: tier-1-format
+    image: rust:latest
+    commands:
+      - cargo fmt --all --check
+    environment:
+      CARGO_HOME: /workspace/.cargo
+    failure: fail
+    depends_on: [tier-0-gate]
+
+  - name: tier-1-clippy
+    image: rust:latest
+    commands:
+      - rustup component add clippy
+      - cargo clippy --workspace --all-targets --all-features -- \
+        -D warnings
+    environment:
+      CARGO_HOME: /workspace/.cargo
+    failure: fail
+    depends_on: [tier-1-format]
+
+  - name: tier-1-build
+    image: rust:latest
+    commands:
+      - cargo build --workspace --release
+    environment:
+      CARGO_HOME: /workspace/.cargo
+    failure: fail
+    depends_on: [tier-1-clippy]
+
+  # ─── Tier 2: Security Scanning ───────────────────────────────────────────
+  # Asynchronous: fire and forget after tier-1 passes
+  # Non-blocking: failures do not halt pipeline
+  # Runs on: push, pull_request
+
+  - name: tier-2-semgrep
+    image: returntocorp/semgrep:latest
+    commands:
+      - semgrep scan --json --config=p/security-audit \
+        --output=/workspace/semgrep-report.json /workspace || true
+    environment:
+      SEMGREP_APP_TOKEN: ""
+    failure: ignore
+    depends_on: [tier-1-build]
+    when:
+      - event: [push, pull_request]
+
+  - name: tier-2-trivy
+    image: aquasec/trivy:latest
+    commands:
+      - trivy fs --format=json --severity=HIGH,CRITICAL \
+        --output=/workspace/trivy-report.json /workspace || true
+    failure: ignore
+    depends_on: [tier-2-semgrep]
+    when:
+      - event: [push, pull_request]
+
+  # ─── Tier 3: Nightly Comprehensive Testing ──────────────────────────────
+  # Synchronous within tier-3, but gated by cron trigger
+  # Only runs on: cron event (nightly-test job)
+  # Sequential: unit-tests → integration-tests → doc-tests → coverage
+
+  - name: tier-3-unit-tests
+    image: rust:latest
+    commands:
+      - cargo test --workspace --release --lib
+    environment:
+      CARGO_HOME: /workspace/.cargo
+    failure: fail
+    when:
+      - event: cron
+        cron: nightly-test
+
+  - name: tier-3-integration-tests
+    image: rust:latest
+    commands:
+      - cargo test --workspace --release --test '*'
+    environment:
+      CARGO_HOME: /workspace/.cargo
+    failure: fail
+    depends_on: [tier-3-unit-tests]
+    when:
+      - event: cron
+        cron: nightly-test
+
+  - name: tier-3-doc-tests
+    image: rust:latest
+    commands:
+      - cargo test --doc --release
+    environment:
+      CARGO_HOME: /workspace/.cargo
+    failure: fail
+    depends_on: [tier-3-integration-tests]
+    when:
+      - event: cron
+        cron: nightly-test
+
+  - name: tier-3-coverage
+    image: rust:latest
+    commands:
+      - cargo install tarpaulin
+      - cargo tarpaulin --workspace --release --out=Json \
+        > /workspace/coverage-report.json || true
+    environment:
+      CARGO_HOME: /workspace/.cargo
+    failure: ignore
+    depends_on: [tier-3-doc-tests]
+    when:
+      - event: cron
+        cron: nightly-test

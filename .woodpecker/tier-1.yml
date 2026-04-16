@@ -16,10 +16,7 @@ steps:
     pull: false
     settings:
       image: heraldstack-ci-rust
-      commands:
-        - cargo fmt --check --all
-        - cargo clippy --workspace --all-targets -- -D warnings
-        - cargo test --workspace
+      commands: '["cargo fmt --check --all","cargo clippy --workspace --all-targets -- -D warnings","cargo test --workspace"]'
       cancel_key:
         from_secret: ci_cancel_key
       time_budget_secs: 600

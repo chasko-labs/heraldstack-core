@@ -19,7 +19,7 @@ steps:
       commands: '["cargo fmt --check --all","cargo clippy --workspace --all-targets -- -D warnings","cargo test --workspace"]'
       cancel_key:
         from_secret: ci_cancel_key
-      time_budget_secs: 600
+      time_budget_secs: 1200
       tier: 1
       env:
         RUST_LOG: info

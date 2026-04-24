@@ -15,7 +15,7 @@
 # tier-0 gates use alpine:3.21 — no rust toolchain needed, fast boot.
 # draft-gate and skip-ci-gate halt the pipeline immediately; metadata
 # step surfaces branch/sha/author/event for log traceability.
-# audit step is failure: warn — advisory only, does not block merge.
+# audit step is failure: ignore — advisory only, does not block merge.
 
 when:
   - event: [pull_request, push, manual]
@@ -91,7 +91,7 @@ steps:
   - name: audit
     image: rust:1.87-slim
     depends_on: [test]
-    failure: warn
+    failure: ignore
     commands:
       - apt-get update -qq && apt-get install -y -qq --no-install-recommends ca-certificates pkg-config libssl-dev git >/dev/null
       - cargo install cargo-audit --locked -q

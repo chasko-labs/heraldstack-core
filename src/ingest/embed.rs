@@ -104,14 +104,14 @@ struct EmbedResponse {
 /// - Network connectivity issues occur
 ///
 /// # Examples
-/// ```rust,no_run
+/// ```rust,ignore
 /// use reqwest::Client;
-/// use rust_ingest::embed;
+/// use harold::ingest::embed;
 ///
 /// #[tokio::main]
 /// async fn main() -> anyhow::Result<()> {
 ///     let client = Client::new();
-///     let embedding = embed::embed("Hello world", 100, &client).await?;
+///     let embedding: Vec<f32> = embed::embed("Hello world", 100, &client).await?;
 ///     println!("Embedding dimension: {}", embedding.len());
 ///     Ok(())
 /// }

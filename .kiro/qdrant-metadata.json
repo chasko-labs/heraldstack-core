@@ -1,0 +1,37 @@
+{
+  "project_slug": "heraldstack-core",
+  "repo_type": "governance",
+  "stack": [],
+  "deploy_targets": [],
+  "kb_families_required": [
+    "governance",
+    "governance/state-taxonomy",
+    "governance/promotion-schema",
+    "governance/accepted-gaps",
+    "personas",
+    "author/voice",
+    "mcp",
+    "observability"
+  ],
+  "mcp_overlay_families": [
+    "mcp-qdrant",
+    "mcp-observability",
+    "mcp-aws"
+  ],
+  "governance_tier": "high",
+  "agents_in_scope": [
+    "poltergeist-stratia-aws-infra",
+    "poltergeist-stratia-bedrock-arch",
+    "ghost-stratia-haunting-designer",
+    "ghost-stratia-haunting-auditor",
+    "ghost-stratia-code-mapper",
+    "poltergeist-kerouac-source-scribe",
+    "ghost-scribe-style-enforcer",
+    "ghost-orin-ci-cd",
+    "ghost-ralph-wiggum-haunting-overlayverify",
+    "poltergeist-lyra-aws-identity"
+  ],
+  "squad_predecessor": "",
+  "bootstrap_timestamp": "2026-05-04T19:37:15Z",
+  "haunting_commit": "3490835d714d353955193309e4e1f33070797fa0"
+}

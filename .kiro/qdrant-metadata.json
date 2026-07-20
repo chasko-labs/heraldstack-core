@@ -14,8 +14,8 @@
     "observability"
   ],
   "mcp_overlay_families": [
-    "mcp-qdrant",
-    "mcp-observability",
+    "mcp-s3vectors",
+    "mcp-cloudwatch",
     "mcp-aws"
   ],
   "governance_tier": "high",
